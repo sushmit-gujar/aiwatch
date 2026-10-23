@@ -15,11 +15,11 @@ import time
 import urllib.request
 from pathlib import Path
 
+from public_repos import REPOS, fetch  # type: ignore[import-not-found]
+
 from aiwatch.advisories import matcher
 from aiwatch.advisories.db import AdvisoryDB
 from aiwatch.scanner import scan
-
-from public_repos import REPOS, fetch  # type: ignore[import-not-found]
 
 ROOT = Path(__file__).resolve().parents[1]
 
