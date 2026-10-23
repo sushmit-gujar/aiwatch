@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiwatch"
+version = "0.1.0"
+description = "Find, fix and continuously monitor vulnerabilities in AI/LLM application stacks: ML dependencies vs live OSV advisories, model artifacts, Hugging Face refs, MCP configs and risky loader patterns. Minimal-safe-version fixes, SARIF, drift monitoring, HTML dashboard."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Sushmit Gujar", email = "sushmit.gujar@gmail.com" }]
+keywords = ["ai-security", "llm-security", "mlsecops", "supply-chain", "osv", "vulnerability", "sarif", "mcp", "huggingface", "owasp-llm", "mitre-atlas"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Security",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["packaging>=23", "tomli>=2; python_version<'3.11'"]
+
+[project.optional-dependencies]
+artifacts = ["loadsafe @ git+https://github.com/sushmit-gujar/loadsafe.git@128e45269c58826d3916074d02e716793de78db7"]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10"]
+
+[project.scripts]
+aiwatch = "aiwatch.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sushmit-gujar/aiwatch"
+Dashboard = "https://sushmit-gujar.github.io/aiwatch/"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aiwatch"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = ["examples"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["B905", "SIM102", "E731"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/aiwatch/report/html.py" = ["E501"]
+"tests/*" = ["E501"]

@@ -1,0 +1,130 @@
+name: aiwatch monitor
+description: >-
+  Continuously monitor an AI/LLM repo: ML dependencies vs live OSV advisories, model artifacts,
+  Hugging Face refs, MCP configs and risky loader patterns. Persists state between runs, reports
+  NEW vs known findings, uploads SARIF to code scanning and opens/updates one tracking issue.
+author: Sushmit Gujar
+branding:
+  icon: shield
+  color: orange
+inputs:
+  path:
+    description: Directory to scan (relative to the workspace)
+    default: "."
+  state-key:
+    description: Cache key prefix for the persisted SQLite state
+    default: aiwatch-state
+  fail-on-new:
+    description: Fail the job if a NEW finding is at/above this severity (none|low|medium|high|critical)
+    default: none
+  open-issue:
+    description: Open/update a tracking issue when there are new findings
+    default: "true"
+  issue-label:
+    default: aiwatch
+  upload-sarif:
+    default: "true"
+  sarif-category:
+    default: aiwatch
+  dashboard-dir:
+    description: Where to write the HTML dashboard + JSON report
+    default: aiwatch-dashboard
+  dashboard-url:
+    description: Public URL of the dashboard (linked from the issue)
+    default: ""
+  python-version:
+    default: "3.12"
+  artifacts:
+    description: Install loadsafe for opcode-level model-artifact scanning
+    default: "true"
+  extra-args:
+    description: Extra arguments for `aiwatch monitor` (e.g. --fix-min-severity high)
+    default: ""
+  token:
+    default: ${{ github.token }}
+outputs:
+  new:
+    value: ${{ steps.monitor.outputs.new }}
+  known:
+    value: ${{ steps.monitor.outputs.known }}
+  resolved:
+    value: ${{ steps.monitor.outputs.resolved }}
+  total:
+    value: ${{ steps.monitor.outputs.total }}
+  issue-url:
+    value: ${{ steps.issue.outputs.url }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install aiwatch
+      shell: bash
+      run: |
+        if [ "${{ inputs.artifacts }}" = "true" ]; then
+          pip install -q "${{ github.action_path }}[artifacts]"
+        else
+          pip install -q "${{ github.action_path }}"
+        fi
+    - name: Restore monitor state
+      uses: actions/cache/restore@v4
+      with:
+        path: .aiwatch-state
+        key: ${{ inputs.state-key }}-${{ github.run_id }}
+        restore-keys: ${{ inputs.state-key }}-
+    - name: Scan and diff against state
+      id: monitor
+      shell: bash
+      run: |
+        set -o pipefail
+        aiwatch monitor "${{ inputs.path }}" --state .aiwatch-state/state.db \
+          --sarif aiwatch.sarif --html "${{ inputs.dashboard-dir }}/index.html" \
+          --json "${{ inputs.dashboard-dir }}/report.json" --md aiwatch-issue.md \
+          --title "${{ github.repository }}/${{ inputs.path }}" \
+          ${{ inputs.dashboard-url && format('--dashboard-url {0}', inputs.dashboard-url) || '' }} \
+          --fail-on-new "${{ inputs.fail-on-new }}" ${{ inputs.extra-args }} | tee aiwatch.txt
+        { echo '### aiwatch'; echo; cat aiwatch-issue.md; } >> "$GITHUB_STEP_SUMMARY"
+    - name: Save monitor state
+      if: always() && steps.monitor.outcome != 'skipped'
+      uses: actions/cache/save@v4
+      with:
+        path: .aiwatch-state
+        key: ${{ inputs.state-key }}-${{ github.run_id }}
+    - name: Upload SARIF to code scanning
+      if: always() && inputs.upload-sarif == 'true' && hashFiles('aiwatch.sarif') != ''
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: aiwatch.sarif
+        category: ${{ inputs.sarif-category }}
+    - name: Open or update tracking issue
+      id: issue
+      if: always() && inputs.open-issue == 'true' && hashFiles('aiwatch-issue.md') != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        NEW: ${{ steps.monitor.outputs.new }}
+        TOTAL: ${{ steps.monitor.outputs.total }}
+        RUN_ID: ${{ steps.monitor.outputs.run_id }}
+        LABEL: ${{ inputs.issue-label }}
+        TITLE: "aiwatch: AI-stack vulnerability monitor (${{ inputs.path }})"
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        gh label create "$LABEL" --color FFB020 --description "aiwatch monitor" 2>/dev/null || true
+        num=$(gh issue list --label "$LABEL" --state open --search "in:title \"$TITLE\"" \
+              --json number --jq '.[0].number // empty')
+        printf '\n[Workflow run](%s)\n' "$RUN_URL" >> aiwatch-issue.md
+        if [ "${NEW:-0}" -gt 0 ]; then
+          if [ -n "$num" ]; then
+            gh issue edit "$num" --body-file aiwatch-issue.md
+            gh issue comment "$num" --body "Monitor run #$RUN_ID: **$NEW new** finding(s), $TOTAL open. $RUN_URL"
+          else
+            url=$(gh issue create --title "$TITLE" --label "$LABEL" --body-file aiwatch-issue.md)
+            num=${url##*/}
+          fi
+        elif [ -n "$num" ] && [ "${TOTAL:-0}" -eq 0 ]; then
+          gh issue close "$num" --comment "All aiwatch findings resolved ($RUN_URL)."
+        elif [ -n "$num" ]; then
+          gh issue edit "$num" --body-file aiwatch-issue.md   # refresh counts, no notification
+        fi
+        [ -n "$num" ] && echo "url=${{ github.server_url }}/${{ github.repository }}/issues/$num" >> "$GITHUB_OUTPUT" || true

@@ -1,0 +1,51 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - run: pip install -e ".[dev,artifacts]"
+      - run: ruff check .
+      - run: mypy src
+      - run: pytest -q
+      - name: Demo numbers in README are reproducible (offline snapshot)
+        run: |
+          cp results/demo.json /tmp/committed.json
+          python evals/demo.py > /dev/null
+          python - <<'PY'
+          import json
+          def strip(d):
+              if isinstance(d, dict):
+                  return {k: strip(v) for k, v in d.items() if k not in ("scan_seconds",)}
+              return [strip(x) for x in d] if isinstance(d, list) else d
+          a = strip(json.load(open("/tmp/committed.json"))["steps"])
+          b = strip(json.load(open("results/demo.json"))["steps"])
+          assert a == b, "results/demo.json drifted from a fresh run"
+          print("demo steps reproduced exactly")
+          PY
+  resolver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]" uv
+      - name: Resolver-aware fix installs as one set (needs PyPI metadata)
+        run: AIWATCH_NETWORK=1 pytest -q tests/test_resolve.py
+      - name: CLI smoke (live OSV)
+        run: aiwatch scan examples/vulnerable-llm-app --no-artifacts | head -5

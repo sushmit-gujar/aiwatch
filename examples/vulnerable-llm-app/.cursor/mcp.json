@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@0.6.2", "/"]
+    },
+    "remote-tools": {
+      "command": "npx",
+      "args": ["mcp-remote@0.1.10", "http://tools.internal.example.com/sse"]
+    },
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git==2025.7.1", "--repository", "."]
+    },
+    "everything": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-everything"],
+      "alwaysAllow": ["*"]
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": { "OPENAI_API_KEY": "sk-proj-aiwatchDEMOnotARealKey1111111111111111" }
+    },
+    "postgres": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "mcp/postgres:latest", "postgresql://localhost/app"]
+    },
+    "search": {
+      "url": "http://search.example.net/mcp"
+    }
+  }
+}

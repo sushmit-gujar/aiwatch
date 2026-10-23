@@ -1,0 +1,236 @@
+{
+ "tool": "aiwatch 0.1.0",
+ "python": "3.12.15",
+ "platform": "Linux x86_64",
+ "snapshot": {
+  "created": "2026-10-23T16:53:40Z",
+  "source": "https://api.osv.dev/v1/query + pypi.org + registry.npmjs.org + huggingface.co/api",
+  "packages": 17
+ },
+ "baseline_as_of": "2025-06-30",
+ "steps": {
+  "1_baseline": {
+   "note": "advisories published <= 2025-06-30",
+   "findings": 158,
+   "advisories": 128,
+   "vulnerable_packages": 11,
+   "critical_high": 91,
+   "by_severity": {
+    "critical": 27,
+    "high": 64,
+    "medium": 54,
+    "low": 13,
+    "info": 0
+   },
+   "by_category": {
+    "artifact": 2,
+    "code": 13,
+    "config": 2,
+    "dependency": 131,
+    "mcp": 6,
+    "model": 2,
+    "secret": 2
+   },
+   "fixable": 140,
+   "scan_seconds": 0.045,
+   "monitor": {
+    "new": 158,
+    "known": 0,
+    "resolved": 0,
+    "new_baseline": 158
+   }
+  },
+  "2_rescan_new_advisories": {
+   "note": "same code, advisory data as of the snapshot date",
+   "findings": 287,
+   "advisories": 257,
+   "vulnerable_packages": 15,
+   "critical_high": 159,
+   "by_severity": {
+    "critical": 38,
+    "high": 121,
+    "medium": 110,
+    "low": 18,
+    "info": 0
+   },
+   "by_category": {
+    "artifact": 2,
+    "code": 13,
+    "config": 2,
+    "dependency": 253,
+    "mcp": 13,
+    "model": 2,
+    "secret": 2
+   },
+   "fixable": 269,
+   "scan_seconds": 0.031,
+   "monitor": {
+    "new": 129,
+    "known": 158,
+    "resolved": 0,
+    "new_newly_disclosed": 129
+   },
+   "new_by_package": {
+    "vllm": 44,
+    "mlflow": 26,
+    "transformers": 20,
+    "torch": 10,
+    "gradio": 7,
+    "mcp": 6,
+    "llama-index": 5,
+    "mcp-server-git": 4,
+    "langchain": 2,
+    "@modelcontextprotocol/server-filesystem": 2,
+    "mcp-remote": 1,
+    "langchain-community": 1,
+    "requests": 1
+   }
+  },
+  "3_drift": {
+   "note": "added app/finetune.py and llama-cpp-python==0.2.71",
+   "findings": 291,
+   "advisories": 258,
+   "vulnerable_packages": 16,
+   "critical_high": 162,
+   "by_severity": {
+    "critical": 39,
+    "high": 123,
+    "medium": 111,
+    "low": 18,
+    "info": 0
+   },
+   "by_category": {
+    "artifact": 2,
+    "code": 16,
+    "config": 2,
+    "dependency": 254,
+    "mcp": 13,
+    "model": 2,
+    "secret": 2
+   },
+   "fixable": 272,
+   "scan_seconds": 0.032,
+   "monitor": {
+    "new": 4,
+    "known": 287,
+    "resolved": 0,
+    "new_drift": 3,
+    "new_introduced": 1
+   },
+   "new": [
+    {
+     "rule": "AW100",
+     "change": "introduced",
+     "file": "requirements.txt",
+     "line": 16,
+     "message": "llama-cpp-python 0.2.71: llama-cpp-python vulnerable to Remote Code Execution by Server-Side Template Injection in Model"
+    },
+    {
+     "rule": "AW202",
+     "change": "drift",
+     "file": "app/finetune.py",
+     "line": 5,
+     "message": "trust_remote_code=True for microsoft/Phi-3-mini-4k-instruct with an unpinned revision"
+    },
+    {
+     "rule": "AW200",
+     "change": "drift",
+     "file": "app/finetune.py",
+     "line": 9,
+     "message": "torch.load(weights_only=False) unpickles arbitrary objects"
+    },
+    {
+     "rule": "AW201",
+     "change": "drift",
+     "file": "app/finetune.py",
+     "line": 5,
+     "message": "from_pretrained('microsoft/Phi-3-mini-4k-instruct') follows a moving revision (default branch)"
+    }
+   ]
+  },
+  "4_after_fix": {
+   "note": "aiwatch fix (default --max-safety review), then re-scan",
+   "fixes_applied": 29,
+   "files_changed": 7,
+   "findings_resolved_by_fix": 272,
+   "patch_lines": 141,
+   "findings": 19,
+   "advisories": 0,
+   "vulnerable_packages": 0,
+   "critical_high": 8,
+   "by_severity": {
+    "critical": 1,
+    "high": 7,
+    "medium": 7,
+    "low": 4,
+    "info": 0
+   },
+   "by_category": {
+    "artifact": 2,
+    "code": 5,
+    "config": 2,
+    "dependency": 2,
+    "mcp": 4,
+    "model": 2,
+    "secret": 2
+   },
+   "fixable": 0,
+   "scan_seconds": 0.007,
+   "monitor": {
+    "new": 0,
+    "known": 19,
+    "resolved": 272
+   },
+   "remaining_by_rule": {
+    "AW101": 2,
+    "AW202": 2,
+    "AW204": 1,
+    "AW205": 1,
+    "AW206": 1,
+    "AW209": 2,
+    "AW211": 2,
+    "AW212": 2,
+    "AW301": 1,
+    "AW302": 1,
+    "AW303": 1,
+    "AW304": 1,
+    "AW400": 2
+   }
+  }
+ },
+ "live": {
+  "cold_cache_seconds": 4.74,
+  "advisory_fetch_seconds": 2.919,
+  "findings": 287,
+  "advisories": 257,
+  "warm_cache_seconds": 0.05,
+  "resolve_fix_seconds": 0.45,
+  "resolve_log": [
+   "co-resolved requirements.txt in 3 round(s); also moved numpy",
+   "co-resolved serving/pyproject.toml in 1 round(s)",
+   "re-scan: findings 287 -> 18 \u00b7 advisories 257 -> 0 \u00b7 critical+high 159 -> 8"
+  ],
+  "install_check_uv_py312": {
+   "requirements.txt": "resolves",
+   "serving/pyproject.toml": "resolves",
+   "naive_per_package_requirements.txt": "         And because you require langchain-community==0.3.27, we can conclude that your requirements are unsatisfiable."
+  },
+  "resolved_requirements": [
+   "# Deliberately outdated pins (real advisories) -- demo fixture only, never install.",
+   "torch==2.13.0",
+   "transformers==5.16.1",
+   "langchain==1.3.9",
+   "langchain-community==0.3.29",
+   "gradio==6.16.0",
+   "mlflow==3.16.0",
+   "vllm==0.32.0",
+   "mcp==2.2.0",
+   "jinja2==3.1.6",
+   "requests==2.33.0",
+   "numpy==2.0.0",
+   "# Floating AI deps (cannot be matched to advisories until resolved)",
+   "sentence-transformers>=2.2",
+   "openai"
+  ]
+ }
+}

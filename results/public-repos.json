@@ -1,0 +1,203 @@
+{
+ "generated": "2026-10-23T16:54:21Z",
+ "advisory_source": "live api.osv.dev (cold cache)",
+ "repos": [
+  {
+   "repo": "open-webui/open-webui",
+   "commit": "91ea4e3421d1d8069f13d4a463fcb5986d94ea60",
+   "files": [
+    "backend/requirements.txt"
+   ],
+   "components": 115,
+   "pinned": 115,
+   "vulnerable_packages": 17,
+   "advisories": 128,
+   "dependency_findings": 128,
+   "critical": 9,
+   "high": 54,
+   "auto_fixable_in_manifest": 124,
+   "lockfile_only_fixes": 0,
+   "top": [
+    {
+     "package": "pypdf==6.7.5",
+     "advisories": 43
+    },
+    {
+     "package": "pillow==12.3.0",
+     "advisories": 39
+    },
+    {
+     "package": "pyjwt==2.13.0",
+     "advisories": 15
+    },
+    {
+     "package": "aiohttp==3.14.3",
+     "advisories": 8
+    },
+    {
+     "package": "chromadb==1.5.9",
+     "advisories": 4
+    },
+    {
+     "package": "cryptography==48.0.0",
+     "advisories": 4
+    }
+   ],
+   "scan_seconds_cold": 5.43
+  },
+  {
+   "repo": "oobabooga/text-generation-webui",
+   "commit": "c93f8871239550de2ccfe1e95d469aa82616f07e",
+   "files": [
+    "requirements/full/requirements.txt"
+   ],
+   "components": 36,
+   "pinned": 10,
+   "vulnerable_packages": 1,
+   "advisories": 4,
+   "dependency_findings": 12,
+   "critical": 0,
+   "high": 3,
+   "auto_fixable_in_manifest": 4,
+   "lockfile_only_fixes": 0,
+   "top": [
+    {
+     "package": "mcp==1.27.0",
+     "advisories": 4
+    }
+   ],
+   "scan_seconds_cold": 0.28
+  },
+  {
+   "repo": "AUTOMATIC1111/stable-diffusion-webui",
+   "commit": "82a973c04367123ae98bd9abdf80d9eda9b910e2",
+   "files": [
+    "requirements_versions.txt"
+   ],
+   "components": 35,
+   "pinned": 34,
+   "vulnerable_packages": 10,
+   "advisories": 171,
+   "dependency_findings": 172,
+   "critical": 19,
+   "high": 98,
+   "auto_fixable_in_manifest": 170,
+   "lockfile_only_fixes": 0,
+   "top": [
+    {
+     "package": "pillow==9.5.0",
+     "advisories": 52
+    },
+    {
+     "package": "gradio==3.41.2",
+     "advisories": 41
+    },
+    {
+     "package": "gitpython==3.1.32",
+     "advisories": 34
+    },
+    {
+     "package": "transformers==4.30.2",
+     "advisories": 29
+    },
+    {
+     "package": "pytorch-lightning==1.9.4",
+     "advisories": 6
+    },
+    {
+     "package": "setuptools==69.5.1",
+     "advisories": 3
+    }
+   ],
+   "scan_seconds_cold": 1.52
+  },
+  {
+   "repo": "zylon-ai/private-gpt",
+   "commit": "0f6a2de226374a7ccc7ac5e739054be8da9929d9",
+   "files": [
+    "pyproject.toml",
+    "uv.lock"
+   ],
+   "components": 497,
+   "pinned": 351,
+   "vulnerable_packages": 38,
+   "advisories": 242,
+   "dependency_findings": 243,
+   "critical": 7,
+   "high": 108,
+   "auto_fixable_in_manifest": 0,
+   "lockfile_only_fixes": 243,
+   "top": [
+    {
+     "package": "pillow==10.4.0",
+     "advisories": 51
+    },
+    {
+     "package": "pypdf==6.7.0",
+     "advisories": 50
+    },
+    {
+     "package": "aiohttp==3.13.3",
+     "advisories": 32
+    },
+    {
+     "package": "pyjwt==2.11.0",
+     "advisories": 17
+    },
+    {
+     "package": "virtualenv==20.36.1",
+     "advisories": 12
+    },
+    {
+     "package": "tornado==6.5.4",
+     "advisories": 11
+    }
+   ],
+   "scan_seconds_cold": 10.66
+  },
+  {
+   "repo": "langgenius/dify",
+   "commit": "2b35144b2098f8f6ad6af31bf72356a42f813d58",
+   "files": [
+    "api/pyproject.toml",
+    "api/uv.lock"
+   ],
+   "components": 676,
+   "pinned": 500,
+   "vulnerable_packages": 7,
+   "advisories": 20,
+   "dependency_findings": 20,
+   "critical": 1,
+   "high": 4,
+   "auto_fixable_in_manifest": 0,
+   "lockfile_only_fixes": 16,
+   "top": [
+    {
+     "package": "pypdf==6.19.0",
+     "advisories": 8
+    },
+    {
+     "package": "pydantic-ai-slim==2.31.0",
+     "advisories": 5
+    },
+    {
+     "package": "chromadb==0.5.20",
+     "advisories": 3
+    },
+    {
+     "package": "couchbase==4.6.2",
+     "advisories": 1
+    },
+    {
+     "package": "brotli==1.2.0",
+     "advisories": 1
+    },
+    {
+     "package": "brotlicffi==1.2.0.0",
+     "advisories": 1
+    }
+   ],
+   "scan_seconds_cold": 8.1
+  }
+ ]
+}

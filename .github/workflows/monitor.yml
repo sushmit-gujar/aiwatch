@@ -1,0 +1,47 @@
+# Daily AI-stack vulnerability monitor for the demo app in this repo.
+# Reuse in your own repo with:  uses: sushmit-gujar/aiwatch@main
+name: aiwatch monitor
+on:
+  schedule:
+    - cron: "17 11 * * *"   # daily, 11:17 UTC
+  workflow_dispatch:
+permissions:
+  contents: read
+  security-events: write   # SARIF -> code scanning
+  issues: write            # tracking issue
+concurrency:
+  group: aiwatch-monitor
+  cancel-in-progress: false
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    outputs:
+      new: ${{ steps.aiwatch.outputs.new }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: aiwatch
+        uses: ./
+        with:
+          path: examples/vulnerable-llm-app
+          dashboard-url: https://sushmit-gujar.github.io/aiwatch/
+      - name: Build Pages site (live dashboard + committed demo dashboards)
+        run: |
+          mkdir -p site/demo
+          cp aiwatch-dashboard/index.html aiwatch-dashboard/report.json site/
+          cp results/dashboard-before-fix.html site/demo/index.html
+          cp results/dashboard.html site/demo/after-fix.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  pages:
+    needs: monitor
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

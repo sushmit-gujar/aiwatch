@@ -1,0 +1,19 @@
+{
+ "generated": "2026-10-23T16:55:24Z",
+ "pairs": 900,
+ "pairs_with_any_advisory": 87,
+ "agree": 899,
+ "agreement": 0.9989,
+ "local_advisory_groups": 823,
+ "server_records": 1379,
+ "mismatches": [
+  {
+   "package": "PyPI:vllm==0.5.0",
+   "server_only": [
+    "PYSEC-2025-42",
+    "PYSEC-2025-50"
+   ],
+   "local_only": []
+  }
+ ]
+}
